@@ -1,0 +1,19 @@
+mainmodule kmeans {
+    readonly CProxy_Main mainProxy; 
+    readonly CProxy_Points pointsArray; 
+    readonly int numElements; 
+    readonly int numCentroids; 
+    readonly int numChares; 
+    readonly double threshold; 
+
+    mainchare Main {
+        entry Main(CkArgMsg* m);
+
+        entry [reductiontarget] void UpdateData(double counts[3 * numCentroids + 1]); 
+    };  
+
+    array [1D] Points {
+        entry Points(); 
+        entry void Assign(double centroids[2 * numCentroids]);
+    };
+};

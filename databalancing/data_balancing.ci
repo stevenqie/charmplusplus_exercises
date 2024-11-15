@@ -1,0 +1,24 @@
+mainmodule data_balancing {
+    
+    readonly CProxy_Main mainProxy; 
+    readonly CProxy_DataInstance dataArray; 
+    readonly int arraySize; 
+    readonly int lowerBound; 
+    readonly int upperBound;
+
+
+    mainchare Main {
+        entry Main(CkArgMsg* m);
+        entry [reductiontarget] void calcRedistributionPlan(int charesizes[arraySize]);
+        entry [reductiontarget] void sendRedistributionPlan(int finished);
+        entry [reductiontarget] void charesFinished(int finished);
+    };
+
+    array [1D] DataInstance {
+        entry DataInstance();
+        entry void sendSizes();
+        entry void sendExpectedSendsReceives(int ev_sends , int ev_recvs);
+        entry void redistribute(int n, int plan[n]);
+        entry void pushData(int n, int data[n]);
+    };
+}

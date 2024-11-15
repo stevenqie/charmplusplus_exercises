@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "data_balancing.C": "cpp",
+        "kmeans.C": "cpp",
+        "prime2.C": "cpp",
+        "prime.C": "cpp"
+    }
+}

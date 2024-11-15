@@ -1,0 +1,12 @@
+mainmodule test_primality {
+    readonly CProxy_Origin originInstance;
+
+    mainchare Origin {
+        entry Origin(CkArgMsg* m);
+        entry void donePrime(size_t idx, int length, int result[length]);
+    };
+
+    chare checkPrimality {
+        entry checkPrimality(int length, uint64_t nums[length], size_t idx);
+    };
+}

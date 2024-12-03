@@ -2,7 +2,7 @@
 
 #include <ckcallback.h>
 
-int THRESHOLD = 20; 
+int THRESHOLD = 30; 
 
 class ValueMsg: public CMessage_ValueMsg {
     public:   

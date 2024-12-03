@@ -3,6 +3,9 @@
         "data_balancing.C": "cpp",
         "kmeans.C": "cpp",
         "prime2.C": "cpp",
-        "prime.C": "cpp"
+        "prime.C": "cpp",
+        "oddeven.C": "cpp",
+        "fibonacci.C": "cpp",
+        "fib_futures.C": "cpp"
     }
 }

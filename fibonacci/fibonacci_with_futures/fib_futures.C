@@ -2,35 +2,35 @@
 
 #include <ckcallback.h>
 
-int THRESHOLD = 30; 
+int THRESHOLD = 2; 
 
 class ValueMsg: public CMessage_ValueMsg {
     public:   
-        int value; 
+        long value; 
 };
 
 class Main : public CBase_Main {
     public:
         Main(CkMigrateMessage *m) {};
         Main(CkArgMsg* m) { thisProxy.run(atoi(m->argv[1])); }
-        void run(int n) {
+        void run(long n) {
             CkFuture f = CkCreateFuture();
             CProxy_Fib::ckNew(n, f);
             ValueMsg *m = (ValueMsg*)CkWaitFuture(f);
-            CkPrintf("The requested Fibonacci number is : %d\n", m->value);
+            CkPrintf("The requested Fibonacci number is : %ld\n", m->value);
             CkExit();
         }
 };
 
 class Fib : public CBase_Fib {
     public:
-        int result;
+        long result;
         Fib(CkMigrateMessage *m) {};
-        Fib(int n, CkFuture f){ 
+        Fib(long n, CkFuture f){ 
             thisProxy.run(n, f); 
         }
 
-        void run(int n, CkFuture f) {
+        void run(long n, CkFuture f) {
             if (n < THRESHOLD) {
                 result = seqFib(n);
             } else {
@@ -55,10 +55,9 @@ class Fib : public CBase_Fib {
             CkSendToFuture(f, m);
 
             delete this; 
-            
         }
 
-        int seqFib(int n) {
+        long seqFib(long n) {
             if (n <= 1) {
                 return n;
             }

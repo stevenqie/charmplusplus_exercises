@@ -1,14 +1,21 @@
+# Makefile for Charm++ program
+
 # Variables
 CHARMC = /Users/stevenqie/software/charm/netlrts-darwin-arm8/bin/charmc
-TARGET = particles                       
-SRCS = particles.ci particles.C          
+OPTS = -O2
+SUFFIX = 
+DECL = 
 
-all: $(TARGET)
+all: particles 
 
-$(TARGET): $(SRCS)
-	$(CHARMC) particles.ci             
-	$(CHARMC) -c particles.C    
-	$(CHARMC) -o $(TARGET) particles.o  
+particles: particles.o particles.decl.h
+	$(CHARMC) $(OPTS) -module CommonLBs -language charm++ -o particles$(SUFFIX) particles.o 
+
+particles.o: particles.C particles.decl.h
+	$(CHARMC) $(OPTS) -o $@ -c $< 
+
+particles.decl.h: particles.ci 
+	$(CHARMC) -E particles.ci $(DECL)
 
 clean:
 	rm -f *.o $(TARGET) particles.decl.h particles.def.h charmrun 

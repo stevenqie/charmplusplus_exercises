@@ -1,6 +1,3 @@
-#include "pup.h"
-#include "pup_stl.h"
-
 #include "particles.decl.h"
 #include <cstdlib>
 #include <cmath>
@@ -13,7 +10,6 @@
 #include <iostream>
 #include <assert.h>
 
-
 CProxy_Main mainProxy; 
 CProxy_coordchare coords_array; 
 
@@ -23,6 +19,7 @@ int ymin;
 int ymax; 
 int iterations; 
 
+int particlesPerCell; //read from command line, represents number of particles each chare should have 
 int k; //read from command line, the simulation will create a 2 dimensional array of chares of size k x k. Each chare will have a bounding box of its own size 100.0/k
 
 class MsgData : public CMessage_MsgData {
@@ -40,11 +37,13 @@ class Main : public CBase_Main {
         int charesreceived; 
     public: 
         Main(CkArgMsg* msg) {
-            if (msg->argc != 2) {
-                CkPrintf("Usage: ./charmrun +p<n> ./particles K\n"); 
+            if (msg->argc != 3) {
+                CkPrintf("Usage: ./charmrun +p<n> ./particles N K\n"); 
                 CkExit();
             }
-            k = atoi(msg->argv[1]);
+
+            particlesPerCell = atoi(msg->argv[1]);
+            k = atoi(msg->argv[2]);
             mainProxy = thisProxy; 
 
             xmin = 0; 
@@ -86,21 +85,11 @@ class coordchare: public CBase_coordchare {
         struct Particle {
             double x; 
             double y; 
-
-            void pup(PUP::er &p) {
-                p | x; 
-                p | y; 
-            }
         };
 
         struct messageCounter {
             int need; 
             int received; 
-
-            void pup(PUP::er &p) {
-                p | need; 
-                p | received; 
-            }
         };
 
         int xstart; 
@@ -136,7 +125,6 @@ class coordchare: public CBase_coordchare {
             ystart = thisIndex.y * (ymax - ymin) / k;
             yend = (thisIndex.y + 1) * (ymax - ymin) / k;
 
-            int particlesPerCell = 1000 + (rand() % (20000 - 1000 + 1));
             for (int i = 0; i < particlesPerCell; i++) {
                 Particle p; 
                 p.x = xstart + static_cast<double>(rand()) / RAND_MAX * (xend - xstart);
@@ -174,29 +162,9 @@ class coordchare: public CBase_coordchare {
             charesReceived = 0;
             iteration = 0; 
             assert(charesNeeded == (int)messageCounters.size());
-
-            //dynamic load balancing 
-            usesAtSync = true; 
         }
 
         coordchare(CkMigrateMessage* msg) {}
-
-        void pup(PUP::er &p) {
-            CBase_coordchare::pup(p);
-
-            p | xstart;
-            p | xend;
-            p | ystart;
-            p | yend;
-            p | charesNeeded;
-            p | charesReceived;
-            p | iteration; 
-
-            p | particles; //this is a vector this should work apapretly according to manual 
-            p | neighborParticles; //this is map, which should also be just be seralized with no special gimmicks according to manual 
-            p | messageCounters; //another map 
-
-        }
 
         void startSimulation() {
             resetForNextIteration();
@@ -321,6 +289,7 @@ class coordchare: public CBase_coordchare {
         void iterationDone() {
             iteration++; 
             if (iteration % 10 == 0) {
+                //contribute to reduction
                 int particleCount = (int)particles.size();
                 CkCallback cb_sum(CkReductionTarget(Main, sumReductionDone), mainProxy); 
                 contribute(sizeof(int), &particleCount, CkReduction::sum_int, cb_sum);
@@ -328,11 +297,6 @@ class coordchare: public CBase_coordchare {
                 //contribute to reduction 
                 CkCallback cb_max(CkReductionTarget(Main, maxReductionDone), mainProxy);
                 contribute(sizeof(int), &particleCount, CkReduction::max_int, cb_max);
-
-                //also load balance at each 10th iteration, unless we are done with the simulation 
-                if (iteration != iterations) {
-                    AtSync();
-                }
             } 
 
             //this chare hit the iteration limit
@@ -350,10 +314,6 @@ class coordchare: public CBase_coordchare {
             } else {
                 thisProxy(thisIndex.x, thisIndex.y).startSimulation();
             }
-        }
-
-        void ResumeFromSync() {
-            thisProxy(thisIndex.x, thisIndex.y).startSimulation();
         }
 };
 

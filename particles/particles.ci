@@ -1,4 +1,6 @@
 mainmodule particles{
+    include "pup_stl.h"; 
+
     readonly CProxy_Main mainProxy; 
     readonly CProxy_coordchare coords_array; 
     readonly int xmin; 
@@ -6,14 +8,13 @@ mainmodule particles{
     readonly int ymin; 
     readonly int ymax; 
     readonly int iterations; 
-
-    readonly int particlesPerCell; 
     readonly int k; 
 
     message MsgData;
 
     mainchare Main {
         entry Main(CkArgMsg* msg);
+        
         entry [reductiontarget] void maxReductionDone(int max);
         entry [reductiontarget] void sumReductionDone(int sum);
         entry void done();
@@ -22,6 +23,7 @@ mainmodule particles{
 
     array [2D] coordchare {
         entry coordchare();
+
         entry void startSimulation();
         entry void notifyAndSendToNeighbors();
         entry void receiveParticle(MsgData* msg);

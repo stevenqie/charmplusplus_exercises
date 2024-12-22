@@ -64,6 +64,8 @@
         "unordered_map": "cpp",
         "variant": "cpp",
         "vector": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "particles2.C": "cpp",
+        "particles3.C": "cpp"
     }
 }

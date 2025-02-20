@@ -1,7 +1,7 @@
 # Makefile for Charm++ program
 
 # Variables
-CHARMC = /Users/stevenqie/charm/netlrts-darwin-x86_64-smp/bin/charmc   
+CHARMC = /Users/stevenqie/software/charm/netlrts-darwin-arm8/bin/charmc   
 TARGET = test_primality                       
 SRCS = prime.ci prime.C             
 

@@ -1,5 +1,5 @@
-CHARMDIR= /Users/stevenqie/software/charm
-CHARMC = /Users/stevenqie/software/charm/netlrts-darwin-arm8/bin/charmc 
+CHARMDIR=~/software/charm/netlrts-darwin-arm8
+CHARMC=$(CHARMDIR)/bin/charmc $(OPTS)
 
 all: server client
 

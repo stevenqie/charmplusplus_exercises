@@ -6,7 +6,6 @@
 
 void handler(char *msg)
 {
-    
   if(CcsIsRemoteRequest()) {
     char answer[1024];
     char *name=msg+CmiMsgHeaderSizeBytes;
@@ -28,4 +27,3 @@ int main(int argc, char **argv)
 {
   ConverseInit(argc, argv, user_main, 0, 0);
 }
-

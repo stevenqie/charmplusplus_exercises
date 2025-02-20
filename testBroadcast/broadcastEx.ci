@@ -1,0 +1,14 @@
+mainmodule broadcast_example {
+
+    readonly CProxy_Main mainProxy;
+
+    mainchare Main {
+        entry Main(CkArgMsg* msg);
+        entry void done();
+    };
+
+    array [1D] Worker {
+        entry Worker();
+        entry void receiveBroadcast(int data); 
+    };
+};
